@@ -205,7 +205,7 @@ class FernetSigner(Signer):
         :type value: any
         :rtype: bytes
         """
-        payload = struct.pack('>cQ', self.version, int(time.time()))
+        payload = struct.pack(b'>cQ', self.version, int(time.time()))
         payload += force_bytes(value)
         return payload + self.signature(payload).finalize()
 
@@ -217,8 +217,8 @@ class FernetSigner(Signer):
         :type signed_value: bytes
         :type ttl: int | datetime.timedelta
         """
-        h_size, d_size = struct.calcsize('>cQ'), self.digest.digest_size
-        fmt = '>cQ%ds%ds' % (len(signed_value) - h_size - d_size, d_size)
+        h_size, d_size = struct.calcsize(b'>cQ'), self.digest.digest_size
+        fmt = b'>cQ%ds%ds' % (len(signed_value) - h_size - d_size, d_size)
         try:
             version, timestamp, value, sig = struct.unpack(fmt, signed_value)
         except struct.error:
