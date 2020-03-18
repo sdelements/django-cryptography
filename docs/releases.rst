@@ -1,8 +1,24 @@
 Releases
 ========
 
-0.4 - master_
+1.1 - master_
 -------------
+
+1.0 - 2020-02-09
+----------------
+
+* Added support Django 3.0
+* Dropped Django 2.1 support
+* Dropped Python 2.7 support
+* Removed legacy support code
+
+0.4 - 2020-01-28
+----------------
+
+* Dropped Django 1.8 and 2.0 support
+* Fixed Django 3.0 deprecation warning
+* Fixed migration test cases
+
 
 0.3 - 2017-12-19
 ----------------
@@ -26,3 +42,5 @@ Releases
 .. _0.1.x: https://github.com/georgemarshall/django-cryptography/tree/stable/0.1.x
 .. _0.2.x: https://github.com/georgemarshall/django-cryptography/tree/stable/0.2.x
 .. _0.3.x: https://github.com/georgemarshall/django-cryptography/tree/stable/0.3.x
+.. _0.4.x: https://github.com/georgemarshall/django-cryptography/tree/stable/0.4.x
+.. _1.0.x: https://github.com/georgemarshall/django-cryptography/tree/stable/1.0.x

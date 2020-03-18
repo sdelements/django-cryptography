@@ -1,19 +1,13 @@
+import pickle
 from base64 import b64decode, b64encode
-from importlib import import_module
 
 from django.core import checks
 from django.db import models
-from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 
 from django_cryptography.core.signing import SignatureExpired
 from django_cryptography.utils.crypto import FernetBytes
-
-try:
-    from django.utils.six.moves import cPickle as pickle
-except ImportError:
-    import pickle
 
 FIELD_CACHE = {}
 
@@ -70,7 +64,7 @@ class PickledField(models.Field):
             return connection.Database.Binary(self._dump(value))
         return value
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, *args, **kwargs):
         if value is not None:
             return self._load(force_bytes(value))
         return value
@@ -82,12 +76,12 @@ class PickledField(models.Field):
 
     def to_python(self, value):
         # If it's a string, it should be base64-encoded data
-        if isinstance(value, six.text_type):
+        if isinstance(value, str):
             return self._load(b64decode(force_bytes(value)))
         return value
 
 
-class EncryptedMixin(object):
+class EncryptedMixin:
     """
     A field mixin storing encrypted data
 
@@ -124,8 +118,7 @@ class EncryptedMixin(object):
 
     def check(self, **kwargs):
         errors = super(EncryptedMixin, self).check(**kwargs)
-        # Django 1.8 compatibility for `self.rel`
-        if getattr(self, 'remote_field', getattr(self, 'rel', None)):
+        if getattr(self, 'remote_field', None):
             errors.append(
                 checks.Error(
                     'Base field for encrypted cannot be a related field.',
@@ -175,7 +168,7 @@ class EncryptedMixin(object):
 
     get_db_prep_save = models.Field.get_db_prep_save
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, *args, **kwargs):
         if value is not None:
             return self._load(force_bytes(value))
         return value
@@ -222,4 +215,4 @@ def encrypt(base_field, key=None, ttl=None):
 
     name, path, args, kwargs = base_field.deconstruct()
     kwargs.update({'key': key, 'ttl': ttl})
-    return get_encrypted_field(base_field.__class__)(*args, **kwargs)
+    return get_encrypted_field(type(base_field))(*args, **kwargs)
